@@ -6,17 +6,30 @@ cam = Camera()
 #set the maximum display size
 display = Display((800,600))
 
+#set a variable for the motion threshold
+threshold = 5.0
+
 #create a loop to constantly get a new image from the camera
 while True:
-  #check the display for user interaction
-  display.checkEvents()
-  #grab the image from the camera
-  img  = cam.getImage()
-  #show the image in a new window
-  img.show()
+  #grab the first image from the camera
+  img01 = cam.getImage().toGray()
+  #pause half a second
+  time.sleep(0.5)
+  #grab another image from the camera
+  img02 = cam.getImage().toGray()
+  #calculate the difference between the images
+  #binarize the image to black and white and then invert the colors
+  diff = (img01 - img02).binarize(50).invert()
+  #show the results
+  diff.show()
   
-  #if a left mouse click is detected, save the image
-  if display.mouseLeft:
+  #store all of the image values in a matrix array
+  matrix = diff.getNumpy()
+  #calculate the mean of the values to determine how much has changed
+  mean = matrix.mean()
+  
+  #if the ammount changed is greater than our threshold, then save the image
+  if mean >= threshold:
     #initiate the counter variable
     i = 0
     #check to see if the filename already exists
@@ -24,6 +37,6 @@ while True:
       #if it does, add one to the counter
       i += 1
     #save the image to a file within the project folder
-    img.save('image%s.png' % i)
+    img02.save('image%s.png' % i)
     #print a confirmation response
-    print('Image Saved')
+    print('Motion Detected')
