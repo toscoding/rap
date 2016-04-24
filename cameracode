@@ -1,0 +1,29 @@
+#import the SimpleCV library
+from SimpleCV import *
+
+#initialize the camera
+cam = Camera()
+#set the maximum display size
+display = Display((800,600))
+
+#create a loop to constantly get a new image from the camera
+while True:
+  #check the display for user interaction
+  display.checkEvents()
+  #grab the image from the camera
+  img  = cam.getImage()
+  #show the image in a new window
+  img.show()
+  
+  #if a left mouse click is detected, save the image
+  if display.mouseLeft:
+    #initiate the counter variable
+    i = 0
+    #check to see if the filename already exists
+    while os.path.exists('image%s.png' % i):
+      #if it does, add one to the counter
+      i += 1
+    #save the image to a file within the project folder
+    img.save('image%s.png' % i)
+    #print a confirmation response
+    print('Image Saved')
